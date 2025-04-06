@@ -1443,7 +1443,7 @@ with tab5:
                         fig.update_layout(
                             title=dict(
                                 text="Price Changes Before Trades by Time Period",
-                                font=dict(size=18, color='black')
+                                font=dict(size=18, family="Arial", color='black')
                             ),
                             xaxis=dict(
                                 title="Days Before Trade",
@@ -1452,17 +1452,16 @@ with tab5:
                                 ticktext=filtered_trends["days_bin.Unnamed: 2_level_1"]
                             ),
                             yaxis=dict(
-                                title="Price Difference (points)",
-                                titlefont=dict(color='blue'),
-                                tickfont=dict(color='blue')
+                                title=dict(
+                                    text="Price Difference (points)",
+                                    font=dict(size=14, color='black')
+                                )
                             ),
                             yaxis2=dict(
-                                title="Percentage Change (%)",
-                                titlefont=dict(color='green'),
-                                tickfont=dict(color='green'),
-                                anchor="x",
-                                overlaying="y",
-                                side="right"
+                                title=dict(
+                                    text="Percentage Change (%)",
+                                    font=dict(size=14, color='black')
+                                )
                             ),
                             legend=dict(
                                 orientation="h",
