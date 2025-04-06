@@ -1441,7 +1441,10 @@ with tab5:
                         
                         # Update layout with dual y-axes
                         fig.update_layout(
-                            title=f"Price Changes Before {selected_trade['Type']} Trades by Time Period",
+                            title=dict(
+                                text="Price Changes Before Trades by Time Period",
+                                font=dict(size=18, color='black')
+                            ),
                             xaxis=dict(
                                 title="Days Before Trade",
                                 tickmode='array',
