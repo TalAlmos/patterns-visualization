@@ -240,44 +240,29 @@ with tab1:
                             )
                         
                         with col2:
-                            # Filter by pattern duration
-                            min_duration = int(matching_patterns['duration'].min())
-                            max_duration = int(matching_patterns['duration'].max())
-                            duration_range = st.slider(
-                                "Pattern Duration (length):",
-                                min_value=min_duration,
-                                max_value=max_duration,
-                                value=(min_duration, max_duration),
-                                key="duration_range_tab1"
+                            # Filter by min duration
+                            min_duration = st.slider(
+                                "Minimum pattern duration:",
+                                min_value=int(matching_patterns['duration'].min()),
+                                max_value=int(matching_patterns['duration'].max()),
+                                value=int(matching_patterns['duration'].min()),
+                                key="min_duration_filter_tab1"
                             )
                             
-                            # Boolean filters using multiselect
-                            bool_filters = []
-                            
-                            if 'direction_alignment' in matching_patterns.columns:
-                                direction_options = st.multiselect(
-                                    "Direction Alignment:",
-                                    options=["Aligned with trend", "Against trend"],
-                                    default=[],
-                                    key="dir_align_tab1"
-                                )
-                                if "Aligned with trend" in direction_options:
-                                    bool_filters.append(('direction_alignment', True))
-                                if "Against trend" in direction_options:
-                                    bool_filters.append(('direction_alignment', False))
-                    
-                    # Apply filters to patterns data
-                    filtered_patterns = matching_patterns.copy()
+                            # Select top N patterns
+                            top_n = st.number_input(
+                                "Select top N patterns by impact:",
+                                min_value=1,
+                                max_value=len(matching_patterns),
+                                value=min(5, len(matching_patterns)),
+                                key="top_n_filter_tab1"
+                            )
                     
                     # Apply range filters
-                    filtered_patterns = filtered_patterns[
-                        (filtered_patterns['avg_deviation'] >= deviation_range[0]) &
-                        (filtered_patterns['avg_deviation'] <= deviation_range[1]) &
-                        (filtered_patterns['price_impact'] >= impact_range[0]) &
-                        (filtered_patterns['price_impact'] <= impact_range[1]) &
-                        (filtered_patterns['duration'] >= duration_range[0]) &
-                        (filtered_patterns['duration'] <= duration_range[1])
-                    ]
+                    filtered_patterns = matching_patterns.copy()
+                    
+                    # Initialize bool_filters as an empty list
+                    bool_filters = []
                     
                     # Apply boolean filters
                     for column, value in bool_filters:
@@ -332,13 +317,13 @@ with tab1:
                             )
                         
                         with col2:
-                            # Select by max duration
-                            max_duration = st.slider(
-                                "Maximum pattern duration:",
+                            # Select by min duration
+                            min_duration = st.slider(
+                                "Minimum pattern duration:",
                                 min_value=int(filtered_patterns['duration'].min()),
                                 max_value=int(filtered_patterns['duration'].max()),
-                                value=int(filtered_patterns['duration'].max()),
-                                key="max_duration_tab1"
+                                value=int(filtered_patterns['duration'].min()),
+                                key="min_duration_criteria_tab1"
                             )
                             
                             # Select top N patterns
@@ -347,14 +332,14 @@ with tab1:
                                 min_value=1,
                                 max_value=len(filtered_patterns),
                                 value=min(5, len(filtered_patterns)),
-                                key="top_n_tab1"
+                                key="top_n_criteria_tab1"
                             )
                         
                         # Apply criteria
                         criteria_patterns = filtered_patterns[
                             (filtered_patterns['avg_deviation'] >= min_dev_threshold) &
                             (filtered_patterns['price_impact'] >= min_impact_threshold) &
-                            (filtered_patterns['duration'] <= max_duration)
+                            (filtered_patterns['duration'] >= min_duration)
                         ].copy()
                         
                         # Sort by price impact and select top N
@@ -1087,8 +1072,16 @@ with tab4:
                                 gridcolor='lightgray',
                             ),
                             yaxis=dict(
-                                title='Value',
-                                gridcolor='lightgray',
+                                title=dict(
+                                    text="Price Difference (points)",
+                                    font=dict(size=14, color='black')
+                                )
+                            ),
+                            yaxis2=dict(
+                                title=dict(
+                                    text="Percentage Change (%)",
+                                    font=dict(size=14, color='black')
+                                )
                             ),
                             legend=dict(
                                 orientation="h",
@@ -1097,7 +1090,8 @@ with tab4:
                                 xanchor="right",
                                 x=1
                             ),
-                            hovermode="x unified",
+                            height=500,
+                            hovermode="x unified"
                         )
                         
                         # Option to add markers for market open/close
